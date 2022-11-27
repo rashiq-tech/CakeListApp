@@ -1,9 +1,7 @@
 package com.abdul_rashiq.cakelistapp.viewmodel;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.LiveDataReactiveStreams;
-import android.arch.lifecycle.MutableLiveData;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.abdul_rashiq.cakelistapp.model.Cake;
@@ -15,9 +13,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Flowable;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 
 @HiltViewModel
 public class CakesViewModel extends ViewModel {
@@ -25,26 +26,32 @@ public class CakesViewModel extends ViewModel {
     private final CakesRepository cakesRepository;
 
     public MutableLiveData<List<Cake>> getCakesListState = new MutableLiveData<>();
+    public MutableLiveData<String> isErrorState = new MutableLiveData<>();
 
     @Inject
     public CakesViewModel(CakesRepository cakesRepository) {
         this.cakesRepository = cakesRepository;
     }
 
-    public LiveData<List<Cake>> getCakesListAPI(){
-        return LiveDataReactiveStreams.fromPublisher(callGetCakesListAPI());
-    }
-
-    private Flowable<List<Cake>> callGetCakesListAPI() {
-        return this.cakesRepository.getCakesList()
-                .toFlowable()
+    public void callGetCakesListAPI() {
+        this.cakesRepository.getCakesList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(cakes -> {
-                    getCakesListState.postValue(cakes);
-                })
-                .doOnError(throwable -> {
-                    getCakesListState.postValue(new ArrayList<>());
+                .subscribe(new SingleObserver<List<Cake>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Cake> cakes) {
+                        getCakesListState.postValue(cakes);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        isErrorState.postValue(e.getMessage());
+                    }
                 });
     }
 

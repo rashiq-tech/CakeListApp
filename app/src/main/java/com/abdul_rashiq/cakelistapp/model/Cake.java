@@ -2,9 +2,10 @@ package com.abdul_rashiq.cakelistapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Cake {
+public class Cake implements Serializable {
 
     @SerializedName("title")
     private String title;
