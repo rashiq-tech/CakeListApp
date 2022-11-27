@@ -40,6 +40,7 @@ public class CakesDetailDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.DialogStyle);
+        setCancelable(false);
 
         getExtras();
     }
@@ -74,5 +75,9 @@ public class CakesDetailDialogFragment extends DialogFragment {
                     .placeholder(R.drawable.iv_placeholder)
                     .into(binding.ivCake);
         }
+
+        binding.btClose.setOnClickListener(view -> {
+            dismiss();
+        });
     }
 }

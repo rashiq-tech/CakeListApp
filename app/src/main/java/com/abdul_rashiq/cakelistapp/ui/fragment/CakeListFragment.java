@@ -20,6 +20,8 @@ import com.abdul_rashiq.cakelistapp.model.Cake;
 import com.abdul_rashiq.cakelistapp.ui.adapters.CakesListRvAdapter;
 import com.abdul_rashiq.cakelistapp.viewmodel.CakesViewModel;
 
+import java.util.List;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -67,7 +69,9 @@ public class CakeListFragment extends Fragment implements CakesListRvAdapter.OnI
             if (binding.srlCakesList.isRefreshing()) {
                 binding.srlCakesList.setRefreshing(false);
             }
-            binding.rvCakesList.setAdapter(new CakesListRvAdapter(cakesList, this));
+            List<Cake> distinctList = cakesViewModel.getDistinctList(cakesList);
+            List<Cake> sortedList = cakesViewModel.getSortedList(distinctList);
+            binding.rvCakesList.setAdapter(new CakesListRvAdapter(sortedList, this));
         });
 
         cakesViewModel.isErrorState.observe(getViewLifecycleOwner(), errorMessage -> {

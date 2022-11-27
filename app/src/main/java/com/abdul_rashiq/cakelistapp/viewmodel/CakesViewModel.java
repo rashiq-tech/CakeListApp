@@ -8,7 +8,12 @@ import com.abdul_rashiq.cakelistapp.model.Cake;
 import com.abdul_rashiq.cakelistapp.repository.CakesRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -55,4 +60,15 @@ public class CakesViewModel extends ViewModel {
                 });
     }
 
+    //function to get distinct element in list
+    public List<Cake> getDistinctList(List<Cake> cakesList) {
+        Set<Cake> hashSet = new HashSet<>(cakesList);
+        return new ArrayList<>(hashSet);
+    }
+
+    //function to sort the list alphabetically
+    public List<Cake> getSortedList(List<Cake> cakesList) {
+        Collections.sort(cakesList, (p1, p2) -> p1.getTitle().compareToIgnoreCase(p2.getTitle()));
+        return cakesList;
+    }
 }
