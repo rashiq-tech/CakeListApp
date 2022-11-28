@@ -54,6 +54,7 @@ public class CakeListFragment extends Fragment implements CakesListRvAdapter.OnI
 
     }
 
+    //function to initialise all objects
     private void initialise() {
         cakesViewModel = new ViewModelProvider(this).get(CakesViewModel.class);
 
@@ -64,41 +65,58 @@ public class CakeListFragment extends Fragment implements CakesListRvAdapter.OnI
         binding.srlCakesList.setOnRefreshListener(() -> cakesViewModel.callGetCakesListAPI());
     }
 
+    //function to set observe data from viewmodel
     private void observeData() {
+
+        //observing getCakesListState to see any changes to data after api call
         cakesViewModel.getCakesListState.observe(getViewLifecycleOwner(), cakesList -> {
+            //disable refreshing if its already in progress
             if (binding.srlCakesList.isRefreshing()) {
                 binding.srlCakesList.setRefreshing(false);
             }
+            //calling function to get distinct objects in list received from api
             List<Cake> distinctList = cakesViewModel.getDistinctList(cakesList);
+            //calling function to get sort objects in list against title received from api
             List<Cake> sortedList = cakesViewModel.getSortedList(distinctList);
+            //setting adapter for recycler view
             binding.rvCakesList.setAdapter(new CakesListRvAdapter(sortedList, this));
+            //scheduling recycler view the animation for fade-in
             binding.rvCakesList.scheduleLayoutAnimation();
         });
 
+        //observing isErrorState if any error is posted during api call
         cakesViewModel.isErrorState.observe(getViewLifecycleOwner(), errorMessage -> {
+            //disable refreshing if its already in progress
             if (binding.srlCakesList.isRefreshing()) {
                 binding.srlCakesList.setRefreshing(false);
             }
+            //an alert is shown, with message
             new AlertDialog.Builder(requireContext())
                     .setTitle(R.string.alert_title_sorry)
                     .setMessage(errorMessage)
                     .setCancelable(false)
+                    //button to retry the api call
                     .setNegativeButton(R.string.alert_option_retry, (dialogInterface, id) -> {
                         binding.srlCakesList.setRefreshing(true);
                         cakesViewModel.callGetCakesListAPI();
                         dialogInterface.dismiss();
                     })
+                    //button to exit the app if error.
                     .setPositiveButton(R.string.alert_option_exit, (dialogInterface, id) -> {
                         requireActivity().finish();
                     }).create().show();
         });
 
+        //setting swipe_refresh_layout refreshing during api call
         binding.srlCakesList.setRefreshing(true);
+        //function to call api for cake list
         cakesViewModel.callGetCakesListAPI();
     }
 
     @Override
     public void onItemClick(Cake cake) {
+        //dialog is shown when an item is clicked in list
+        //this Cake object against item clicked is passed from adapter class through OnItemClickListener interface
         CakesDetailDialogFragment dialogFragment = CakesDetailDialogFragment.newInstance(cake);
         dialogFragment.show(getParentFragmentManager(), CakesDetailDialogFragment.TAG);
     }

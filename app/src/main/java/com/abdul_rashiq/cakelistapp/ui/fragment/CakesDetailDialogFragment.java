@@ -42,6 +42,7 @@ public class CakesDetailDialogFragment extends DialogFragment {
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.DialogStyle);
         setCancelable(false);
 
+        //function to get arguments passed from parent class is called here
         getExtras();
     }
 
@@ -59,13 +60,16 @@ public class CakesDetailDialogFragment extends DialogFragment {
 
     }
 
+    //function to get arguments passed from parent class
     private void getExtras() {
         if (getArguments() != null){
             cake = (Cake) getArguments().getSerializable(CAKE_INTENT_KEY);
         }
     }
 
+    //function to initialise all objects
     private void initialise() {
+        //data is set to view
         if (cake != null){
             binding.tvCake.setText(cake.getTitle());
             binding.tvCakeDescription.setText(cake.getDescription());
@@ -76,6 +80,7 @@ public class CakesDetailDialogFragment extends DialogFragment {
                     .into(binding.ivCake);
         }
 
+        //listener for button to close the dialog
         binding.btClose.setOnClickListener(view -> {
             dismiss();
         });
