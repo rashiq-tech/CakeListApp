@@ -72,6 +72,7 @@ public class CakeListFragment extends Fragment implements CakesListRvAdapter.OnI
             List<Cake> distinctList = cakesViewModel.getDistinctList(cakesList);
             List<Cake> sortedList = cakesViewModel.getSortedList(distinctList);
             binding.rvCakesList.setAdapter(new CakesListRvAdapter(sortedList, this));
+            binding.rvCakesList.scheduleLayoutAnimation();
         });
 
         cakesViewModel.isErrorState.observe(getViewLifecycleOwner(), errorMessage -> {
